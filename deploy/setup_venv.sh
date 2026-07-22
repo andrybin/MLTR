@@ -1,10 +1,24 @@
-sudo apt-get update
-sudo apt install -y python3.12-venv
-python3 -m venv venv
-source env/bin/activate
- 
-sudo apt install -y xvfb
-sudo apt install -y libxcb-xinerama0 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xkb1 libxkbcommon-x11-0
-sudo apt install -y libqt5gui5 libqt5core5a libqt5dbus5 libx11-xcb1 libfontconfig1 libfreetype6
+#!/usr/bin/env bash
 
-pip install -r deploy/requirements.txt
+set -euo pipefail
+
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly PROJECT_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+readonly VENV_DIR="${PROJECT_DIR}/.venv"
+readonly REQUIREMENTS_FILE="${SCRIPT_DIR}/requirements.txt"
+
+if ! command -v uv >/dev/null 2>&1; then
+    echo "uv is required. Install it from https://docs.astral.sh/uv/getting-started/installation/" >&2
+    exit 1
+fi
+
+if [[ ! -f "${REQUIREMENTS_FILE}" ]]; then
+    echo "Requirements file not found: ${REQUIREMENTS_FILE}" >&2
+    exit 1
+fi
+
+uv venv --python 3.12 "${VENV_DIR}"
+uv pip install --python "${VENV_DIR}/bin/python" --requirement "${REQUIREMENTS_FILE}"
+
+echo "Virtual environment created at ${VENV_DIR}"
+echo "Activate it with: source ${VENV_DIR}/bin/activate"
