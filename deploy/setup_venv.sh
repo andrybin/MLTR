@@ -18,6 +18,7 @@ if [[ ! -f "${REQUIREMENTS_FILE}" ]]; then
 fi
 
 uv venv --python 3.12 "${VENV_DIR}"
+uv pip install --python "${VENV_DIR}/bin/python" pip
 uv pip install --python "${VENV_DIR}/bin/python" --requirement "${REQUIREMENTS_FILE}"
 
 echo "Virtual environment created at ${VENV_DIR}"
